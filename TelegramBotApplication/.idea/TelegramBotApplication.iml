@@ -14,7 +14,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="entityManagerFactory" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -119,6 +121,26 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:6.0.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:6.0.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.xmlunit:xmlunit-core:2.9.1" level="project" />
+    <orderEntry type="library" name="Maven: redis.clients:jedis:4.4.0-m2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.11.1" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20220924" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.10.1" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-redis:3.1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-redis:3.1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-keyvalue:3.1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-oxm:6.0.11" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context-support:6.0.11" level="project" />
+    <orderEntry type="library" name="Maven: io.lettuce:lettuce-core:6.2.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-unix-common:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.94.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.5.8" level="project" />
+    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.telegram:telegrambots:6.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.telegram:telegrambots-meta:6.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />
@@ -153,6 +175,5 @@
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.15" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpmime:4.5.13" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.7" level="project" />
   </component>
 </module>

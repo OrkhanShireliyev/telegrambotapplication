@@ -16,5 +16,5 @@ public class Question {
     private Long id;
     private String key;
     @OneToOne(mappedBy = "question")
-    private Answer answer;
+    private Action action;
 }
