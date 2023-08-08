@@ -1,6 +1,7 @@
 package com.example.telegrambotapplication.service;
 
 import com.example.telegrambotapplication.config.TelegramConfig;
+import com.example.telegrambotapplication.models.Action;
 import com.example.telegrambotapplication.models.Translate;
 import com.example.telegrambotapplication.models.redis.RedisHelper;
 import com.example.telegrambotapplication.service.redisService.RedisHelperService;
@@ -34,50 +35,88 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final QuestionService questionService;
 
+    private final ActionService actionService;
+
 
     @Override
     public void onUpdateReceived(Update update) {
         SendMessage sendMessage = new SendMessage();
-        Long chatId = update.getMessage().getChatId();
-        sendMessage.setChatId(chatId);
-        if (update.getMessage().getText().equals("/start")) {
-            redisHelperService.saveRedis(new RedisHelper(chatId, update.getMessage().getText(), "Azerbaycan"), update);
-            System.out.println(redisHelperService.getByChatId(chatId));
-        } else if (update.getMessage().getText().equals("English")) {
-            redisHelperService.updateRedisLang(update, update.getMessage().getText());
-            System.out.println(redisHelperService.getByChatId(chatId));
-        } else if (update.getMessage().getText().equals("Pусский")) {
-            redisHelperService.updateRedisLang(update, update.getMessage().getText());
-            System.out.println(redisHelperService.getByChatId(chatId));
-        }
 
 
-        if (update.getMessage().hasText()) {
-            RedisHelper redisHelper = redisHelperService.getByChatId(chatId);
-            System.out.println(redisHelper);
-            Translate translate = translateService.getQuestionByKeyAndLang(redisHelper.getNextQuestion(), redisHelper.getLang());
-            sendMessage.setText(translate.getValue());
-            String redisNextQuestion = redisHelperService.getRedisHelperByChatId(chatId).getNextQuestion();
-//            String nextQuestion = questionService.findQuestionByKey(redisNextQuestion).getAction().getNextQuestion();
-//            get redisde next questionu deyisdir ele tabledeki nextquestion
-            redisHelperService.updateRedisNextQuestion(update, redisNextQuestion);
+//        checkLang(update, chatId);
+//
+//        String key=actionService.findActionByNextQuestion(redisHelperService.getRedisHelperByChatId(update.getMessage().getChatId()).getNextQuestion()).getButtonName();
+//        String lang = redisHelperService.getRedisHelperByChatId(update.getMessage().getChatId()).getLang();
+//        translateService.getButtonByKeyAndLang(key,lang);
+
+
+        if (!update.hasCallbackQuery() && update.getMessage().getText().equals("/start")) {
+            Long chatId = update.getMessage().getChatId();
+            sendMessage.setChatId(chatId);
+            checkLang(update, chatId);
+            doPeriod(update, sendMessage, chatId);
+        } else if (update.hasCallbackQuery()) {
+            if (update.getCallbackQuery().getData().equals("Azerbaycan")){
+                redisHelperService.updateRedisLang(update,"Azerbaycan");
+            }else if (update.getCallbackQuery().getData().equals("English")){
+                redisHelperService.updateRedisLang(update,"English");
+            }else if (update.getCallbackQuery().getData().equals("Pусский")){
+                redisHelperService.updateRedisLang(update,"Pусский");
+            }
+            System.out.println(update.getCallbackQuery().getData());
+            Long id = update.getCallbackQuery().getMessage().getChatId();
+            sendMessage.setChatId(id);
+            doPeriod(update, sendMessage, id);
         }
-        System.out.println(redisHelperService.getRedisHelperByChatId(chatId));
+        setButton(update,sendMessage);
+
+
         try {
             execute(sendMessage);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
+    public void checkLang(Update update, Long chatId) {
+
+        if (update.getMessage().getText().equals("/start")) {
+
+            redisHelperService.saveRedis(new RedisHelper(chatId, update.getMessage().getText(), "Azerbaycan"), update);
+            System.out.println(redisHelperService.getByChatId(chatId));
+        }
+    }
+
+    public void doPeriod(Update update, SendMessage sendMessage, Long chatId) {
+//        if (update.hasCallbackQuery()) {
+            RedisHelper redisHelper = redisHelperService.getByChatId(chatId);
+            System.out.println(redisHelper);
+            Translate translate = translateService.getQuestionByKeyAndLang(redisHelper.getNextQuestion(), redisHelper.getLang());
+            sendMessage.setText(translate.getValue());
+            String redisNextQuestion = redisHelperService.getRedisHelperByChatId(chatId).getNextQuestion();
+            redisHelperService.updateRedisNextQuestion(update, redisNextQuestion);
+//        }
+        System.out.println(redisHelperService.getRedisHelperByChatId(chatId));
+    }
 
     private ReplyKeyboard setButton(Update update, SendMessage sendMessage) {
-        Long chatId = update.getMessage().getChatId();
+        Long chatId=null;
+        if (update.hasCallbackQuery()){
+            chatId = update.getCallbackQuery().getMessage().getChatId();
+        }else if (update.getMessage().hasText()){
+            chatId=update.getMessage().getChatId();
+        }
+
         sendMessage.setChatId(chatId);
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        RedisHelper redisHelperChatId = redisHelperService.getRedisHelperByChatId(chatId);
+        String buttonName = actionService.findActionByNextQuestion(redisHelperChatId.getNextQuestion()).getButtonName();
+        System.out.println(buttonName);
+        String lang = redisHelperChatId.getLang();
+        List<Translate> translates = translateService.getQuestionsByKeyAndLang(buttonName, lang);
 
-        List<Translate> translates = translateService.getQuestionsByKeyAndLang("lang", "Azerbaycan");
         translates.stream().forEach(translate -> {
                     InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
 

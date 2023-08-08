@@ -24,28 +24,35 @@ public class RedisHelperService {
     }
 
     public RedisHelper saveRedis(RedisHelper redisHelper, Update update) {
-//        redisHelper.setChatId(update.getMessage().getChatId());
-//        redisHelper.setNextQuestion(update.getMessage().getText());
         hashOperations.put(hashReference, update.getMessage().getChatId(), redisHelper);
-        System.out.println("save metodunda cap olundu "+redisHelper);
         return redisHelper;
     }
 
     public void updateRedisLang(Update update, String lang) {
-        RedisHelper redisHelper = getRedisHelperByChatId(update.getMessage().getChatId());
+        RedisHelper redisHelper = getRedisHelperByChatId(update.getCallbackQuery().getMessage().getChatId());
         redisHelper.setLang(lang);
-        hashOperations.put(hashReference, update.getMessage().getChatId(), redisHelper);
+        hashOperations.put(hashReference, update.getCallbackQuery().getMessage().getChatId(), redisHelper);
     }
+
     public void updateRedisNextQuestion(Update update, String key) {
-        RedisHelper redisHelper = getRedisHelperByChatId(update.getMessage().getChatId());
+        RedisHelper redisHelper=null;
+        if (update.hasCallbackQuery()){
+           redisHelper = getRedisHelperByChatId(update.getCallbackQuery().getMessage().getChatId());
+
+        }else if (update.getMessage().hasText()){
+          redisHelper= getRedisHelperByChatId( update.getMessage().getChatId());
+        }
         redisHelper.setNextQuestion(questionService.findQuestionByKey(key).getAction().getNextQuestion());
-        hashOperations.put(hashReference, update.getMessage().getChatId(), redisHelper);
+        hashOperations.put(hashReference, redisHelper.getChatId(), redisHelper);
     }
 
     public RedisHelper getByChatId(Long id) {
         return hashOperations.get(hashReference, id);
     }
 
+    public void removeRedis(Long chatId){
+        hashOperations.delete(hashReference,chatId);
+    }
 
 }
 
