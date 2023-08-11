@@ -8,6 +8,8 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class RedisHelperService {
@@ -28,6 +30,24 @@ public class RedisHelperService {
         return redisHelper;
     }
 
+    public RedisHelper updateAnswers(Update update, String answer) {
+        RedisHelper redisHelper = null;
+        if (update.hasCallbackQuery()) {
+            redisHelper = getRedisHelperByChatId(update.getCallbackQuery().getMessage().getChatId());
+            List<String>answers=redisHelper.getAnswers();
+            answers.add(answer);
+            redisHelper.setAnswers(answers);
+            hashOperations.put(hashReference, update.getCallbackQuery().getMessage().getChatId(), redisHelper);
+        } else if (update.hasMessage()){
+            redisHelper = getRedisHelperByChatId(update.getMessage().getChatId());
+            List<String>answers=redisHelper.getAnswers();
+            answers.add(answer);
+            redisHelper.setAnswers(answers);
+            hashOperations.put(hashReference, update.getMessage().getChatId(), redisHelper);
+        }
+            return redisHelper;
+    }
+
     public void updateRedisLang(Update update, String lang) {
         RedisHelper redisHelper = getRedisHelperByChatId(update.getCallbackQuery().getMessage().getChatId());
         redisHelper.setLang(lang);
@@ -35,12 +55,12 @@ public class RedisHelperService {
     }
 
     public void updateRedisNextQuestion(Update update, String key) {
-        RedisHelper redisHelper=null;
-        if (update.hasCallbackQuery()){
-           redisHelper = getRedisHelperByChatId(update.getCallbackQuery().getMessage().getChatId());
+        RedisHelper redisHelper = null;
+        if (update.hasCallbackQuery()) {
+            redisHelper = getRedisHelperByChatId(update.getCallbackQuery().getMessage().getChatId());
 
-        }else if (update.getMessage().hasText()){
-          redisHelper= getRedisHelperByChatId( update.getMessage().getChatId());
+        } else if (update.getMessage().hasText()) {
+            redisHelper = getRedisHelperByChatId(update.getMessage().getChatId());
         }
         redisHelper.setNextQuestion(questionService.findQuestionByKey(key).getAction().getNextQuestion());
         hashOperations.put(hashReference, redisHelper.getChatId(), redisHelper);
@@ -50,9 +70,8 @@ public class RedisHelperService {
         return hashOperations.get(hashReference, id);
     }
 
-    public void removeRedis(Long chatId){
-        hashOperations.delete(hashReference,chatId);
+    public void removeRedis(Long chatId) {
+        hashOperations.delete(hashReference, chatId);
     }
-
 }
 

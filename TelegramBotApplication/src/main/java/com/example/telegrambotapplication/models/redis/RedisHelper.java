@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,5 +18,5 @@ public class RedisHelper implements Serializable {
     private Long chatId;
     private String nextQuestion;
     private String lang;
-
+    private List<String> answers;
 }

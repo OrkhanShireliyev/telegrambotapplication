@@ -47,6 +47,13 @@ public class TranslateService {
             buttonName = actionService.findActionByNextQuestion(redisHelperService.getRedisHelperByChatId(update.getMessage().getChatId())
                     .getNextQuestion()).getButtonName();
             return getButtonByKeyAndLang(buttonName,lang);
+        }else if (actionService.findActionByNextQuestion(redisHelperService.getRedisHelperByChatId(
+                update.getMessage().getChatId()).getNextQuestion()) != null &&
+                actionService.findActionByNextQuestion(
+                        redisHelperService.getRedisHelperByChatId(update.getMessage().getChatId()).getNextQuestion()).getActionType().equals("freeText")){
+            buttonName = actionService.findActionByNextQuestion(redisHelperService.getRedisHelperByChatId(update.getMessage().getChatId())
+                    .getNextQuestion()).getButtonName();
+            return getButtonByKeyAndLang(buttonName,lang);
         }
         return null;
     }
