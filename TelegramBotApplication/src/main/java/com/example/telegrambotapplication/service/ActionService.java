@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 public class ActionService {
 
     private final ActionRepo actionRepo;
-
     public Action findActionByNextQuestion(String buttonKey){
         return actionRepo.findActionByNextQuestion(buttonKey);
     }

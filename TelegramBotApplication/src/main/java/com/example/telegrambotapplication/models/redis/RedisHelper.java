@@ -18,5 +18,6 @@ public class RedisHelper implements Serializable {
     private Long chatId;
     private String nextQuestion;
     private String lang;
+    private String buttonType;
     private List<String> answers;
 }
