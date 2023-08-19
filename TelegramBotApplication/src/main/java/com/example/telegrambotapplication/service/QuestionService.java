@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
-
     private final QuestionRepo questionRepo;
 
     public Question findQuestionByKey(String key) {

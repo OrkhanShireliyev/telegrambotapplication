@@ -3,12 +3,10 @@ package com.example.telegrambotapplication.service;
 import com.example.telegrambotapplication.config.TelegramConfig;
 import com.example.telegrambotapplication.models.Translate;
 import com.example.telegrambotapplication.models.redis.RedisHelper;
-import com.example.telegrambotapplication.repo.MessageRepo;
 import com.example.telegrambotapplication.service.redisService.RedisHelperService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
@@ -18,7 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,11 +31,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final TranslateService translateService;
     private final ActionService actionService;
     private final RedisHelperService redisHelperService;
-
-    private final MessageService messageService;
-
-    private final MessageRepo messageRepo;
-
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -61,7 +53,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             startPoint(update, chatId);
             doPeriod(update, sendMessage, chatId);
             setButton(update, sendMessage);
-            translateService.answerCheck(update);
+//            translateService.answerCheck(update);
 
             System.out.println(update.getMessage().getText());
         } else if (update.hasCallbackQuery()) {
@@ -69,8 +61,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else if (update.hasMessage() && !update.getMessage().getText().equals("/start") &&
                 redisHelperService.getByChatId(update.getMessage().getChatId()).getNextQuestion() != null) {
             hasMessage(update, sendMessage);
-            translateService.answerCheck(update);
-
         } else if (update.hasMessage() && redisHelperService.getByChatId(update.getMessage().getChatId()).getNextQuestion() == null) {
             endPoint(update, sendMessage);
         }
@@ -164,20 +154,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                     inlineKeyboardButtons.add(inlineKeyboardButton);
                 }
         );
-
-//        if (translateService.getStartButton(update) == null) {
-//            return null;
-//        } else {
-//            translateService.getStartButton(update).stream().forEach(translate -> {
-//                InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-//
-//                inlineKeyboardButton.setText(translate.getValue());
-//                inlineKeyboardButton.setCallbackData(translate.getValue());
-//
-//
-//                inlineKeyboardButtons.add(inlineKeyboardButton);
-//            });
-//        }
 
         List<List<InlineKeyboardButton>> lists = new ArrayList<>();
         lists.add(inlineKeyboardButtons);
